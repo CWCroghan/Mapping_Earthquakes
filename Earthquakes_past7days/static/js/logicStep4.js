@@ -28,13 +28,25 @@ let map = L.map('mapid', {
     layers: [streets]
 })
 
-// Pass our map layers into our layers control and add the layers control to the map.
-L.control.layers(baseMaps).addTo(map);
 
+// We are adding additional layers
+// Create earthquakes layer
 
-// Accessing the airport GeoJSON URL
+let earthquakes = new L.layerGroup();
 
-let earthquake  = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
+// defining Overlays for the map
+
+let overlays = {
+    Earthquakes: earthquakes
+};
+
+// Adding user control to change which layers are visiable
+
+L.control.layers(baseMaps, overlays).addTo(map);
+
+// Accessing the earthquake GeoJSON URL
+
+let earthquakeData  = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 
 // Adding Style to the output by using data to determing raidus
 
@@ -83,7 +95,8 @@ function onEachFeature(feature, layer) {
 }
 
 // Grabbing our GeoJSON data.
-d3.json(earthquake).then(function(data) {
+// This is the earthquakes layer
+d3.json(earthquakeData).then(function(data) {
     // Creating a GeoJSON layer with the retrieved data.
     L.geoJSON(data, {
         // Changing marker to circle
@@ -93,9 +106,13 @@ d3.json(earthquake).then(function(data) {
         },
         style: styleInfo,
         onEachFeature: onEachFeature
-    }).addTo(map);
-      
+    }).addTo(earthquakes); //creating earthquakes layer
+    
+    //Add earthquakes layer to our map
+    earthquakes.addTo(map);
+    
 });
+
 
 // end of code
 
